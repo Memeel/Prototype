@@ -1,5 +1,4 @@
 #include "vehicle.h"
-#include "HeavyData.h"
 #include <memory>
 #include <iostream>
 #include <string>
@@ -11,8 +10,6 @@ private:
     double weight;
     int seats;
 
-    std::shared_ptr<const HeavyData> heavy;
-
 public:
     // Constructor
     Car(std::string m="Generic car", std::string b="Generic Brand", double w=1200.0, int s=4);
@@ -23,5 +20,12 @@ public:
     Car* Clone() const override;
 
     void show() const override;
-    
+
+};
+
+class CarProto : public Vehicle {
+public:
+    CarProto();
+    Car* Clone() const override;
+    void show() const override;
 };
