@@ -2,7 +2,7 @@
 PROJECT := main
 CXX     ?= g++
 CXXFLAGS:= -std=c++17 -O2 -Wall -Wextra -pedantic -pthread
-LDFLAGS := -pthread
+LDFLAGS := -pthread -lrt
 
 # Flat directory: collect all .cpp files in the current directory
 SRCS := $(wildcard *.cpp)

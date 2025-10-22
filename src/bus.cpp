@@ -1,40 +1,29 @@
-#include "busproto.h"
+#include "bus.h"
 #include <iostream>
 #include <chrono>
 #include <thread>
 
-// BusProto constructor
-BusProto::BusProto()
-{
-    std::this_thread::sleep_for(std::chrono::milliseconds(500));
-    std::cout << "BusProto created using the default constructor" << std::endl;
-}
-
-// BusProto Clone method
-Bus* BusProto::Clone() const {
-    std::cout << "BusProto cloned" << std::endl;
-    return new Bus(); // Create a default Bus object
-}
-
-// BusProto show method (optional, for completeness)
-void BusProto::show() const {
-    std::cout << "BusProto instance" << std::endl;
-}
-
-// Bus constructor
+// Bus constructor (SLOW)
 Bus::Bus(std::string m, std::string b, double w, int s,
-        int maxP, std::string company, bool wifi, bool toilet)
-        : model(m), brand(b), weight(w), seats(s),
-          maxPassengers(maxP), TransitCompany(company),
-          has_wifi(wifi), has_toilet(toilet){}
+         int maxP, std::string company, bool wifi, bool toilet)
+    : model(m), brand(b), weight(w), seats(s),
+      maxPassengers(maxP), TransitCompany(company),
+      has_wifi(wifi), has_toilet(toilet) {
+    // Simulate expensive resource loading
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+    std::cout << "Bus created using the default constructor (SLOW)" << std::endl;
+}
 
-// Bus copy constructor
+// Bus copy constructor (FAST)
 Bus::Bus(const Bus& other)
     : model(other.model), brand(other.brand), weight(other.weight), seats(other.seats),
       maxPassengers(other.maxPassengers), TransitCompany(other.TransitCompany),
-      has_wifi(other.has_wifi), has_toilet(other.has_toilet){}
+      has_wifi(other.has_wifi), has_toilet(other.has_toilet) {
+    // Copying is fast
+    std::cout << "Bus created using the copy constructor (FAST)" << std::endl;
+}
 
-// Bus Clone method
+// Bus Clone method (FAST)
 Bus* Bus::Clone() const {
     return new Bus(*this);
 }
