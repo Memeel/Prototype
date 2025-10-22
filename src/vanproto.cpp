@@ -7,11 +7,12 @@
 VanProto::VanProto()
 {
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
-    std::cout << "VanProto created" << std::endl;
+    std::cout << "VanProto created using the constructor" << std::endl;
 }
 
 // VanProto Clone method
 Van* VanProto::Clone() const {
+    std::cout << "VanProto cloned" << std::endl;
     return new Van(); // Create a default Van object
 }
 

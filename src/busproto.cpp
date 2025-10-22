@@ -7,11 +7,12 @@
 BusProto::BusProto()
 {
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
-    std::cout << "BusProto created" << std::endl;
+    std::cout << "BusProto created using the default constructor" << std::endl;
 }
 
 // BusProto Clone method
 Bus* BusProto::Clone() const {
+    std::cout << "BusProto cloned" << std::endl;
     return new Bus(); // Create a default Bus object
 }
 

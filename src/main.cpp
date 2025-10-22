@@ -1,89 +1,114 @@
 #include <iostream>
-#include <vector>
-#include <chrono>
-#include <thread>
-#include <memory>
-#include <utility>
+#include <ctime>
 #include "vehicle.h"
 #include "carproto.h"
 #include "busproto.h"
 #include "vanproto.h"
 
-using clk = std::chrono::high_resolution_clock;
+// ANSI escape codes for colors
+#define RESET   "\033[0m"
+#define RED     "\033[31m"
+#define GREEN   "\033[32m"
+#define YELLOW  "\033[33m"
+#define BLUE    "\033[34m"
+#define MAGENTA "\033[35m"
+#define CYAN    "\033[36m"
 
-// Simple benchmark: create N objects and store them in a vector to prevent optimization
-template <typename MakeFunc>
-long long bench(const std::string& label, int N, MakeFunc make) {
-    auto t0 = clk::now();
-    std::vector<std::unique_ptr<class Vehicle>> v;
-    v.reserve(N);
-
-    for (int i = 0; i < N; ++i) {
-        auto obj = make();              // Can be Vehicle* or unique_ptr<Vehicle>
-        v.emplace_back(std::move(obj)); // Store as unique_ptr to unify ownership
-        // Lightly use the object to avoid over-optimization
-        // (If the class has show() or heavy data, perform minimal access that doesn\'t affect timing trend)
-    }
-
-    auto t1 = clk::now();
-    auto dur_us = std::chrono::duration_cast<std::chrono::microseconds>(t1 - t0).count();
-
-    // Automatically choose display unit
-    if (dur_us >= 1000) {
-        std::cout << label << ": created " << N << " objects in " << (dur_us / 1000) << " ms\n";
-    } else {
-        std::cout << label << ": created " << N << " objects in " << dur_us << " µs\n";
-    }
-    return dur_us;
+// Get current time in microseconds using wall-clock time
+// This captures actual elapsed time, including sleep delays
+long long get_time_microseconds() {
+    struct timespec ts;
+    clock_gettime(CLOCK_MONOTONIC, &ts);
+    return (long long)ts.tv_sec * 1000000LL + ts.tv_nsec / 1000LL;
 }
 
-int main() {
-    // Create prototype instances (this is where the sleep in *Proto constructors will occur)
-    std::cout << "Creating prototype instances..." << std::endl;
-    CarProto* carPrototype = new CarProto();
-    BusProto* busPrototype = new BusProto();
-    VanProto* vanPrototype = new VanProto();
-    std::cout << "Prototype instances created." << std::endl;
+// Demonstrate the prototype pattern by cloning vehicles from prototypes
+void demonstrate_prototypes(CarProto* carPrototype, BusProto* busPrototype, VanProto* vanPrototype) {
+    std::cout << BLUE << "\nDemonstrating cloning from prototypes:" << RESET << std::endl;
 
-    std::cout << "\nDemonstrating cloning from prototypes:" << std::endl;
-
-    // Clone vehicles from prototypes
+    // Clone one of each vehicle type from the prototypes
     Vehicle* clonedCar = carPrototype->Clone();
     Vehicle* clonedBus = busPrototype->Clone();
     Vehicle* clonedVan = vanPrototype->Clone();
 
-    std::cout << "\nCloned vehicles:" << std::endl;
+    // Display the cloned vehicles
+    std::cout << BLUE << "\nCloned vehicles:" << RESET << std::endl;
     clonedCar->show();
     clonedBus->show();
     clonedVan->show();
 
-    // Benchmarking the creation process
-    constexpr int N = 5;
-
-    std::cout << "\nBenchmarking direct construction vs. cloning..." << std::endl;
-
-    // Benchmarking direct construction of CarProto (will include the sleep)
-    auto t_direct_car_proto = bench("Direct CarProto construction", N, [] {
-        return new CarProto();
-    });
-
-    // Benchmarking cloning from an existing CarProto (should be faster)
-    auto t_clone_car_proto = bench("Cloning from CarProto", N, [&] {
-        return carPrototype->Clone();
-    });
-
-    if (t_clone_car_proto < t_direct_car_proto)
-        std::cout << "✅ Cloning CarProto is faster than direct construction.\n";
-    else
-        std::cout << "ℹ️ Cloning CarProto is not faster (try increasing N or sleep duration).\n";
-
-    // Clean up
-    delete carPrototype;
-    delete busPrototype;
-    delete vanPrototype;
+    // Clean up cloned objects
     delete clonedCar;
     delete clonedBus;
     delete clonedVan;
+}
+
+int main() {
+    // Create prototype instances (these will invoke the slow constructors with sleep)
+    std::cout << CYAN << "Creating prototype instances..." << RESET << std::endl;
+    CarProto* carPrototype = new CarProto();
+    BusProto* busPrototype = new BusProto();
+    VanProto* vanPrototype = new VanProto();
+    std::cout << GREEN << "Prototype instances created." << RESET << std::endl;
+
+    // Show how cloning works
+    demonstrate_prototypes(carPrototype, busPrototype, vanPrototype);
+
+    // Number of objects to create in the benchmark
+    const int N = 5;
+
+    std::cout << MAGENTA << "\nBenchmarking direct construction vs. cloning..." << RESET << std::endl;
+
+    // Arrays to store the created objects
+    Vehicle* direct_cars[N];
+    Vehicle* cloned_benchmark_cars[N];
+
+    // Benchmark 1: Direct construction (calls constructor N times, including sleep)
+    long long start = get_time_microseconds();
+    for (int i = 0; i < N; ++i) {
+        direct_cars[i] = new CarProto();
+    }
+    long long end = get_time_microseconds();
+    long long t_direct_car_proto = end - start;
+
+    // Display direct construction time
+    if (t_direct_car_proto >= 1000) {
+        std::cout << YELLOW << "Direct CarProto construction" << RESET << ": created " << N << " objects in " << (t_direct_car_proto / 1000) << " ms\n";
+    } else {
+        std::cout << YELLOW << "Direct CarProto construction" << RESET << ": created " << N << " objects in " << t_direct_car_proto << " µs\n";
+    }
+
+    // Benchmark 2: Cloning (copies existing object, skips constructor and sleep)
+    start = get_time_microseconds();
+    for (int i = 0; i < N; ++i) {
+        cloned_benchmark_cars[i] = carPrototype->Clone();
+    }
+    end = get_time_microseconds();
+    long long t_clone_car_proto = end - start;
+
+    // Display cloning time
+    if (t_clone_car_proto >= 1000) {
+        std::cout << YELLOW << "Cloning from CarProto" << RESET << ": created " << N << " objects in " << (t_clone_car_proto / 1000) << " ms\n";
+    } else {
+        std::cout << YELLOW << "Cloning from CarProto" << RESET << ": created " << N << " objects in " << t_clone_car_proto << " µs\n";
+    }
+
+    // Compare results
+    if (t_clone_car_proto < t_direct_car_proto)
+        std::cout << GREEN << "Cloning CarProto is faster than direct construction.\n" << RESET;
+    else
+        std::cout << RED << "Cloning CarProto is not faster (try increasing N or sleep duration).\n" << RESET;
+
+    // Clean up prototype instances
+    delete carPrototype;
+    delete busPrototype;
+    delete vanPrototype;
+
+    // Clean up all benchmarked objects
+    for (int i = 0; i < N; ++i) {
+        delete direct_cars[i];
+        delete cloned_benchmark_cars[i];
+    }
 
     return 0;
 }

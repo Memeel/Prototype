@@ -7,11 +7,12 @@
 CarProto::CarProto()
 {
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
-    std::cout << "CarProto created" << std::endl;
+    std::cout << "CarProto created using the constructor" << std::endl;
 }
 
 // CarProto Clone method
 Car* CarProto::Clone() const {
+    std::cout << "CarProto cloned" << std::endl;
     return new Car(); // Create a default Car object
 }
 
