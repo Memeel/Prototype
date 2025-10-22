@@ -1,4 +1,6 @@
 #include "vehicle.h"
+#include "HeavyData.h"
+#include <memory>
 #include <iostream>
 #include <string>
 
@@ -12,6 +14,8 @@ private:
     std::string TransitCompany;
     bool has_wifi;  
     bool has_toilet;
+
+    std::shared_ptr<const HeavyData> heavy;
 
 public:
     // Constructor

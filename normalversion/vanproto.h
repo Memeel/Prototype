@@ -1,4 +1,6 @@
 #include "vehicle.h"
+#include "HeavyData.h"
+#include <memory>
 #include <iostream>
 #include <string>
 
@@ -11,6 +13,8 @@ private:
     double cargoVolume;  
     double capacityWeight;
     bool has_sliding_door;
+
+    std::shared_ptr<const HeavyData> heavy;
 
 public:
     // Constructor
