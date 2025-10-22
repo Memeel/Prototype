@@ -9,8 +9,8 @@
 int main() {
     // Création du prototype de base
     Vehicle* car = new Car("Model S", "Tesla", 1961.0, 5);
-    
-    
+
+
 
     // Clonage des prototypes (utilisation du polymorphisme)
     Vehicle* v1= car->Clone();
@@ -31,10 +31,14 @@ int main() {
     Vehicle* car_proto = new Car("Model S", "Tesla", 1961.0, 5);
     constexpr int N = 100;
 
+    std::cout << "Creating " << N << " objects using classic construction..." << std::endl;
+
     // A) Normal new: fully constructs each time (including expensive HeavyData initialization)
     auto t_new = bench("A) Classic construction (new)", N, [] {
         return new Car("Model S", "Tesla", 1961.0, 5);
     });
+
+    std::cout << "Creating " << N << " objects using prototype clone..." << std::endl;
 
     // B) Prototype cloning: shares HeavyData, copies only lightweight fields
     auto t_clone = bench("B) Prototype.clone()", N, [&] {
