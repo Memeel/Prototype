@@ -30,11 +30,11 @@ This approach is particularly useful when:
 
 #### Class Diagram
 
-![Class Diagram](ClassDiagram.jpg)
+![Class Diagram](assets/ClassDiagram.jpg)
 
 #### Sequence Diagram
 
-![Sequence Diagram](SequenceDiagram.png)
+![Sequence Diagram](assets/SequenceDiagram.png)
 
 ## Core Files
 - `vehicle.h` - Abstract base class with Clone() method
