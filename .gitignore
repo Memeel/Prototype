@@ -3,3 +3,6 @@
 *.o
 *.pch
 main
+
+.DS_Store
+.vscode
