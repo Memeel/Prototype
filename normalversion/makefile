@@ -1,10 +1,10 @@
-# ===== 基本配置 =====
+# ===== Basic configuration =====
 PROJECT := main
 CXX     ?= g++
 CXXFLAGS:= -std=c++17 -O2 -Wall -Wextra -pedantic -pthread
 LDFLAGS := -pthread
 
-# 扁平目录：收集当前目录下所有 .cpp
+# Flat directory: collect all .cpp files in the current directory
 SRCS := $(wildcard *.cpp)
 BUILD_DIR := build
 OBJS := $(patsubst %.cpp,$(BUILD_DIR)/%.o,$(SRCS))
@@ -14,16 +14,16 @@ DEPS := $(OBJS:.o=.d)
 
 all: $(PROJECT)
 
-# 链接
+# Linking
 $(PROJECT): $(OBJS)
 	$(CXX) $(OBJS) -o $@ $(LDFLAGS)
 
-# 通用编译规则：任何 *.cpp -> build/*.o（自动建子目录），并生成依赖文件
+# Generic compile rule: compile any *.cpp -> build/*.o (auto-create subdirectories) and generate dependency (.d) files
 $(BUILD_DIR)/%.o: %.cpp
 	@mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) -MMD -MP -c $< -o $@
 
-# 自动依赖
+# Automatic dependencies
 -include $(DEPS)
 
 run: $(PROJECT)
@@ -34,7 +34,7 @@ clean:
 
 rebuild: clean all
 
-# 调试：打印源/目标文件
+# Debug: print source/target files
 print:
 	@echo "SRCS = $(SRCS)"
 	@echo "OBJS = $(OBJS)"
