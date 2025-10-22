@@ -31,12 +31,6 @@ void demonstrate_prototypes(CarProto* carPrototype, BusProto* busPrototype, VanP
     Vehicle* clonedBus = busPrototype->Clone();
     Vehicle* clonedVan = vanPrototype->Clone();
 
-    // Display the cloned vehicles
-    std::cout << BLUE << "\nCloned vehicles:" << RESET << std::endl;
-    clonedCar->show();
-    clonedBus->show();
-    clonedVan->show();
-
     // Clean up cloned objects
     delete clonedCar;
     delete clonedBus;
@@ -95,9 +89,9 @@ int main() {
 
     // Compare results
     if (t_clone_car_proto < t_direct_car_proto)
-        std::cout << GREEN << "Cloning CarProto is faster than direct construction.\n" << RESET;
+        std::cout << GREEN << "\nCloning CarProto is faster than direct construction.\n" << RESET;
     else
-        std::cout << RED << "Cloning CarProto is not faster (try increasing N or sleep duration).\n" << RESET;
+        std::cout << RED << "\nCloning CarProto is not faster (try increasing N or sleep duration).\n" << RESET;
 
     // Clean up prototype instances
     delete carPrototype;
