@@ -10,13 +10,9 @@ int main() {
     // Création du prototype de base
     Vehicle* car = new Car("Model S", "Tesla", 1961.0, 5);
     
-<<<<<<< HEAD
-    // Clonage de ce prototype (utilisation du polymorphisme)
-=======
     
 
     // Clonage des prototypes (utilisation du polymorphisme)
->>>>>>> c68819e (add heavydata)
     Vehicle* v1= car->Clone();
 
 
@@ -31,32 +27,26 @@ int main() {
     // Libération de la mémoire
     delete car;
     delete v1;
-<<<<<<< HEAD
-    
-=======
-    delete v2;
-    delete v3;
 
     Vehicle* car_proto = new Car("Model S", "Tesla", 1961.0, 5);
     constexpr int N = 100;
 
-        // A) 普通 new：每次都完整构造（含 HeavyData 的昂贵初始化）
-    auto t_new = bench("A) Construction classique (new)", N, [] {
+    // A) Normal new: fully constructs each time (including expensive HeavyData initialization)
+    auto t_new = bench("A) Classic construction (new)", N, [] {
         return new Car("Model S", "Tesla", 1961.0, 5);
     });
 
-    // B) 原型克隆：共享 HeavyData，拷贝轻字段
+    // B) Prototype cloning: shares HeavyData, copies only lightweight fields
     auto t_clone = bench("B) Prototype.clone()", N, [&] {
         return car_proto->Clone();
     });
 
-    // 对比结论
+    // Comparison result
     if (t_clone < t_new)
-        std::cout << "✅ clone 明显更快（共享昂贵资源 HeavyData）\n";
+        std::cout << "✅ clone is significantly faster (shared expensive resource HeavyData)\n";
     else
-        std::cout << "ℹ️ clone 未更快（可增大 N 或加重 HeavyData 构造）\n";
+        std::cout << "ℹ️ clone is not faster (try increasing N or making HeavyData construction heavier)\n";
 
 
->>>>>>> c68819e (add heavydata)
     return 0;
 }

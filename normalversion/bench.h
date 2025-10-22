@@ -7,7 +7,7 @@
 
 using clk = std::chrono::high_resolution_clock;
 
-// 简单基准：创建 N 个对象并把它们存到 vector 里，避免被优化掉
+// Simple benchmark: create N objects and store them in a vector to prevent optimization
 template <typename MakeFunc>
 long long bench(const std::string& label, int N, MakeFunc make) {
     auto t0 = clk::now();
@@ -15,20 +15,20 @@ long long bench(const std::string& label, int N, MakeFunc make) {
     v.reserve(N);
 
     for (int i = 0; i < N; ++i) {
-        auto obj = make();              // 可以是 Vehicle* 或 unique_ptr<Vehicle>
-        v.emplace_back(std::move(obj)); // 统一转成 unique_ptr 存起来
-        // 轻微使用一下对象，防止被过度优化
-        // （如果类里有 show 或 heavy，可做极轻访问，不影响总耗时趋势）
+        auto obj = make();              // Can be Vehicle* or unique_ptr<Vehicle>
+        v.emplace_back(std::move(obj)); // Store as unique_ptr to unify ownership
+        // Lightly use the object to avoid over-optimization
+        // (If the class has show() or heavy data, perform minimal access that doesn't affect timing trend)
     }
 
     auto t1 = clk::now();
     auto dur_us = std::chrono::duration_cast<std::chrono::microseconds>(t1 - t0).count();
 
-    // 自动选择单位显示
+    // Automatically choose display unit
     if (dur_us >= 1000) {
-        std::cout << label << "：创建 " << N << " 个对象耗时 " << (dur_us / 1000) << " ms\n";
+        std::cout << label << ": created " << N << " objects in " << (dur_us / 1000) << " ms\n";
     } else {
-        std::cout << label << "：创建 " << N << " 个对象耗时 " << dur_us << " µs\n";
+        std::cout << label << ": created " << N << " objects in " << dur_us << " µs\n";
     }
     return dur_us;
 }
